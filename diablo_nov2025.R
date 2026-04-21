@@ -1,6 +1,3 @@
-# Final Corrected DIABLO Analysis - Fixed biomarker extraction
-# All previous steps worked perfectly, just fixing the selectVar issue
-
 #setwd("/Users/nszigeti/Desktop/bbb/LAST_DIABLO_FOLDER")
 
 suppressMessages({
@@ -13,16 +10,15 @@ suppressMessages({
   library(enrichplot)
 })
 
-print(" Final Corrected DIABLO Analysis...")
+print("Final Corrected DIABLO Analysis...")
 
-# Create directories
 dir.create("figures", showWarnings = FALSE)
 dir.create("tables", showWarnings = FALSE)
 dir.create("results", showWarnings = FALSE)
 dir.create("enrichment", showWarnings = FALSE)
 
 # 1. DATA LOADING
-print("📊 Loading data...")
+print("Loading data...")
 # Read the original data, specifying the correct delimiter
 protein_unfiltered <- read.csv("protein normalised abundance matrix.csv", sep = ";")
 protein_filtered <- protein_unfiltered[protein_unfiltered$CON == "FALSE" & protein_unfiltered$REV == "FALSE", ]
@@ -159,9 +155,9 @@ tryCatch({
   png("figures/DIABLO_tuning_FINAL.png", width = 1000, height = 600, res = 300)
   plot(tune_result, main = "DIABLO Parameter Tuning Results")
   dev.off()
-  print("✅ Tuning plot saved")
+  print("Tuning plot saved")
 }, error = function(e) {
-  print("⚠️ Tuning plot issue")
+  print("Tuning plot issue")
 })
 
 # 5. FINAL DIABLO MODEL
@@ -411,120 +407,3 @@ summary_df <- data.frame(
   Value = unlist(summary_stats)
 )
 write.csv(summary_df, "tables/COMPREHENSIVE_SUMMARY_FINAL.csv", row.names = FALSE)
-
-# Create final report
-final_report <- c(
-  "DIABLO MULTI-OMICS INTEGRATION ANALYSIS - FINAL RESULTS",
-  "======================================================",
-  "",
-  paste("Analysis completed on:", summary_stats$Analysis_Date),
-  paste("Method used:", summary_stats$Analysis_Type),
-  "",
-  "SAMPLE INFORMATION:",
-  paste("  Total samples:", summary_stats$Total_Samples),
-  paste("  Control samples:", summary_stats$Control_Samples),
-  paste("  UC samples:", summary_stats$UC_Samples),
-  "",
-  "DATA PROCESSING:",
-  paste("  Original proteins:", summary_stats$Original_Proteins),
-  paste("  Final proteins used:", summary_stats$Final_Proteins),
-  paste("  Original genes:", summary_stats$Original_Genes),
-  paste("  Final genes used:", summary_stats$Final_Genes),
-  "",
-  "MODEL PERFORMANCE:",
-  paste("  Error rate:", summary_stats$Model_Error_Rate),
-  paste("  Accuracy:", summary_stats$Model_Accuracy),
-  "",
-  "BIOMARKER DISCOVERY:",
-  paste("  Protein biomarkers:", summary_stats$Protein_Biomarkers),
-  paste("  Gene biomarkers:", summary_stats$Gene_Biomarkers),
-  paste("  Total biomarkers:", summary_stats$Total_Biomarkers),
-  "",
-  "KEY PROTEIN BIOMARKERS:",
-  paste("  ", head(protein_biomarkers, 6), collapse = "\n  "),
-  "",
-  "KEY GENE BIOMARKERS:",
-  paste("  ", head(gene_biomarkers, 6), collapse = "\n  "),
-  "",
-  "OUTPUT FILES:",
-  "  figures/ - All plots and visualizations",
-  "  tables/ - Biomarker lists and summaries",
-  "  enrichment/ - Gene set enrichment results",
-  "  results/ - Analysis reports and documentation",
-  "",
-  "ANALYSIS CONCLUSION:",
-  "Multi-omics integration successfully completed using DIABLO method.",
-  "Identified biomarker signatures distinguishing UC from controls.",
-  paste("Model achieved", summary_stats$Model_Accuracy, "accuracy with comprehensive biomarker discovery.")
-)
-
-writeLines(final_report, "results/DIABLO_FINAL_REPORT.txt")
-
-# Save session info
-writeLines(capture.output(sessionInfo()), "results/SESSION_INFO_FINAL.txt")
-
-# Create R notebook as requested
-notebook_content <- c(
-  "---",
-  "title: 'DIABLO Multi-Omics Integration Analysis'",
-  "author: 'Multi-Omics Analysis Pipeline'",
-  paste("date: '", Sys.Date(), "'", sep = ""),
-  "output: html_document",
-  "---",
-  "",
-  "# DIABLO Multi-Omics Integration Analysis Results",
-  "",
-  "This notebook summarizes the complete multi-omics integration analysis using mixOmics DIABLO.",
-  "",
-  "## Analysis Summary",
-  paste("- **Total Samples**: ", summary_stats$Total_Samples),
-  paste("- **Control Samples**: ", summary_stats$Control_Samples),
-  paste("- **UC Samples**: ", summary_stats$UC_Samples),
-  paste("- **Protein Biomarkers**: ", summary_stats$Protein_Biomarkers),
-  paste("- **Gene Biomarkers**: ", summary_stats$Gene_Biomarkers),
-  paste("- **Model Accuracy**: ", summary_stats$Model_Accuracy),
-  "",
-  "## Key Findings",
-  "",
-  "### Protein Biomarkers",
-  paste(protein_biomarkers, collapse = ", "),
-  "",
-  "### Gene Biomarkers", 
-  paste(gene_biomarkers, collapse = ", "),
-  "",
-  "## Files Generated",
-  "All results have been saved in the LAST_DIABLO_FOLDER directory:",
-  "- **figures/**: All visualization plots",
-  "- **tables/**: Biomarker lists and analysis summaries",
-  "- **enrichment/**: Gene set enrichment analysis results",
-  "- **results/**: Comprehensive reports and session information"
-)
-
-writeLines(notebook_content, "DIABLO_ANALYSIS_NOTEBOOK.Rmd")
-
-# 11. SUCCESS MESSAGE
-print("")
-print("🎉🎉🎉 DIABLO MULTI-OMICS ANALYSIS COMPLETED SUCCESSFULLY! 🎉🎉🎉")
-print("======================================================================")
-print("")
-print("📊 FINAL RESULTS:")
-print(paste("  ✅ Analyzed", summary_stats$Total_Samples, "samples successfully"))
-print(paste("  ✅ Identified", summary_stats$Protein_Biomarkers, "protein biomarkers"))
-print(paste("  ✅ Identified", summary_stats$Gene_Biomarkers, "gene biomarkers"))
-print(paste("  ✅ Achieved", summary_stats$Model_Accuracy, "classification accuracy"))
-print("")
-print("📁 ALL DELIVERABLES SAVED IN LAST_DIABLO_FOLDER:")
-print("  ✨ figures/            - Error rate plots, circos plot, heatmaps, all visualizations")
-print("  📊 tables/             - All biomarker lists, loadings, comprehensive summaries")
-print("  🧮 enrichment/         - ClusterProfiler gene set enrichment analysis")
-print("  📄 results/            - Final reports, session info, documentation")
-print("  📖 DIABLO_ANALYSIS_NOTEBOOK.Rmd - R notebook with results")
-print("")
-print("🔬 MULTI-OMICS INTEGRATION: ✅ COMPLETE")
-print("📊 DIABLO PERFORMANCE EVALUATION: ✅ COMPLETE")  
-print("🎨 CIRCOS PLOT & VISUALIZATIONS: ✅ COMPLETE")
-print("🧮 CLUSTERPROFILER ENRICHMENT: ✅ COMPLETE")
-print("💾 ALL CODE, FIGURES, TABLES, HTML: ✅ SAVED")
-print("")
-print("Ready for biological interpretation and downstream analysis!")
-print("======================================================================")
